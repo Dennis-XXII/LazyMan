@@ -79,16 +79,27 @@ app.get('/health', (_req, res) => res.json({ ok: true }))
 app.post('/users', async (req, res) => {
   const parsed = z.object({
     email: z.string().email(),
-    name: z.string().optional()
+    name: z.string().optional(),
   }).safeParse(req.body)
-  if (!parsed.success) return res.status(400).json({ error: parsed.error.issues })
 
-  const user = await prisma.user.upsert({
-    where: { email: parsed.data.email },
-    update: { name: parsed.data.name },
-    create: { email: parsed.data.email, name: parsed.data.name }
-  })
-  res.json(user)
+  if (!parsed.success) {
+    return res.status(400).json({ error: parsed.error.issues })
+  }
+
+  try {
+    const user = await prisma.user.upsert({
+      where: { email: parsed.data.email },  // must be UNIQUE in schema
+      update: { name: parsed.data.name },
+      create: { email: parsed.data.email, name: parsed.data.name },
+    })
+    return res.json(user)
+  } catch (err) {
+    console.error('POST /users failed:', err)
+    return res.status(500).json({
+      message: 'users upsert failed',
+      detail: err?.message || String(err),
+    })
+  }
 })
 
 /* ---------------- TEMPLATES (list, create w/position, delete, reorder) ---------------- */
