@@ -13,8 +13,6 @@ const PORT = Number(process.env.PORT || 4000)
 
 const APP_TZ = process.env.APP_TZ || undefined
 
-const cors = require('cors')
-
 const allowedOrigins = [
   'http://localhost:5173',
   'https://lazymanbydennis.netlify.app'
