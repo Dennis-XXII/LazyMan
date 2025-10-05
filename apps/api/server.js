@@ -16,7 +16,7 @@ const APP_TZ = process.env.APP_TZ || undefined
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    'https://your-web.example.com'
+    'https://lazymanbydennis.netlify.app/'
   ],
   credentials: false
 }))
