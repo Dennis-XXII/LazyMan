@@ -13,13 +13,27 @@ const PORT = Number(process.env.PORT || 4000)
 
 const APP_TZ = process.env.APP_TZ || undefined
 
+const cors = require('cors')
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://lazymanbydennis.netlify.app'
+]
+
+app.use((req,res,next) => { res.header('Vary', 'Origin'); next() }) // better caching
+
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://lazymanbydennis.netlify.app/'
-  ],
-  credentials: false
+  origin(origin, cb) {
+    if (!origin) return cb(null, true)           // allow curl/health
+    if (allowedOrigins.includes(origin)) return cb(null, true)
+    return cb(new Error(`CORS not allowed for ${origin}`))
+  },
+  methods: ['GET','POST','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization'],
+  credentials: false,
+  maxAge: 86400
 }))
+app.options('*', cors())
 
 const dayKey = (d = new Date()) =>
   new Intl.DateTimeFormat('en-CA', {
