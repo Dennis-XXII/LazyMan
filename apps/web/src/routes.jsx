@@ -4,12 +4,6 @@ import Dashboard from './pages/Dashboard'
 import Rewards from './pages/Rewards'
 import Analytics from './pages/Analytics'
 
-let CURRENT_USER_ID = localStorage.getItem('userId') || null
-export function setUserId(id) {
-  CURRENT_USER_ID = id
-  localStorage.setItem('userId', id)
-}
-
 function RouteError() {
   return (
     <div className="p-4 text-red-600">
