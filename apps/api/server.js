@@ -6,24 +6,38 @@ const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
 const app = express()
-app.use(cors())
-app.use(express.json())
 
-const PORT = Number(process.env.PORT || 4000)
+// --- CORS ---
+const allowedOrigins = [
+  'http://localhost:5173',                   // Vite dev
+  'https://lazymanbydennis.netlify.app',     // Netlify prod
+  // 'https://your-custom-domain.com',
+]
 
-const APP_TZ = process.env.APP_TZ || undefined
+// Good caching across different origins
+app.use((req, res, next) => { res.header('Vary', 'Origin'); next() })
 
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://lazymanbydennis.netlify.app'
-  ],
+  origin(origin, cb) {
+    // allow curl/health (no origin) and exact matches
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true)
+    return cb(new Error(`CORS not allowed for origin: ${origin}`))
+  },
   methods: ['GET','POST','DELETE','OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization'],
-  credentials: false,
+  credentials: false,   // no cookies across origins
   maxAge: 86400
 }))
+
+// Reply to all preflight requests
 app.options('*', cors())
+
+// --- Body parser after CORS ---
+app.use(express.json())
+
+// --- Config & helpers ---
+const PORT = Number(process.env.PORT || 4000)
+const APP_TZ = process.env.APP_TZ || undefined
 
 const dayKey = (d = new Date()) =>
   new Intl.DateTimeFormat('en-CA', {
