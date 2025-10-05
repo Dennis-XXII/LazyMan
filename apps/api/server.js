@@ -395,14 +395,22 @@ app.listen(PORT, () => {
   console.log(`API running on http://localhost:${PORT}`)
 })
 
-// CREATE ANONYMOUS USER (no login)
 app.post('/users/anon', async (_req, res) => {
-  const unique = Math.random().toString(36).slice(2, 10)
-  const user = await prisma.user.create({
-    data: {
-      email: `anon_${unique}@example.local`,
-      name: null
-    }
-  })
-  res.json({ id: user.id })
+  const unique = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+  try {
+    const user = await prisma.user.create({
+      data: {
+        email: `anon_${unique}@example.local`,
+        name: null
+      }
+    })
+    return res.json({ id: user.id })
+  } catch (err) {
+    console.error('POST /users/anon failed:', err)
+    return res.status(500).json({
+      message: 'anon create failed',
+      code: 'ANON_CREATE',
+      detail: err?.message || String(err)
+    })
+  }
 })
