@@ -13,6 +13,14 @@ const PORT = Number(process.env.PORT || 4000)
 
 const APP_TZ = process.env.APP_TZ || undefined
 
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://your-web.example.com'
+  ],
+  credentials: false
+}))
+
 const dayKey = (d = new Date()) =>
   new Intl.DateTimeFormat('en-CA', {
     timeZone: APP_TZ,
@@ -385,4 +393,16 @@ app.get('/analytics/:userId', async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`API running on http://localhost:${PORT}`)
+})
+
+// CREATE ANONYMOUS USER (no login)
+app.post('/users/anon', async (_req, res) => {
+  const unique = Math.random().toString(36).slice(2, 10)
+  const user = await prisma.user.create({
+    data: {
+      email: `anon_${unique}@example.local`,
+      name: null
+    }
+  })
+  res.json({ id: user.id })
 })

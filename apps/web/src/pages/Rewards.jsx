@@ -56,7 +56,7 @@ export default function Rewards({ userId }) {
         {error && <p className="text-sm text-red-600">Failed to load rewards: {String(error.message)}</p>}
         <ul className="space-y-3">
           {(data ?? []).map((r) => (
-            <li key={r.id} className="rounded-2xl bg-white p-4 shadow border">
+            <li key={r.id} className="rounded-2xl bg-white p-4 shadow-sm border border-gray-200">
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
                   <p className="font-medium truncate">{r.title}</p>
@@ -64,13 +64,13 @@ export default function Rewards({ userId }) {
                 </div>
                 <div className="flex items-center gap-1">
                   <button
-                    className="rounded-xl bg-[#00ADB5] px-4 py-2 text-white text-sm"
+                    className="border border-[#00ADB5] text-[#00ADB5] shadow-md shadow-[#00ADB5]-500/30 px-4 py-2 rounded-xl text-sm"
                     onClick={()=>redeem.mutate(r.id)}
                   >
                     Redeem
                   </button>
                   <button
-                    className="rounded-xl px-3 py-2 text-sm border text-red-600"
+                    className="rounded-xl px-3 py-2 text-sm border text-red-600 shadow-md shadow-red-600/30"
                     onClick={()=>{ if (confirm('Delete this reward?')) del.mutate(r.id) }}
                   >
                     Delete

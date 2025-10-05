@@ -4,13 +4,12 @@ import Dashboard from './pages/Dashboard'
 import Rewards from './pages/Rewards'
 import Analytics from './pages/Analytics'
 
-// set your user id once (or put it in localStorage via DevTools)
-export const USER_ID = localStorage.getItem('userId') || 'cmgcgnbia000011u1aawjavca'
-if (!localStorage.getItem('userId') && USER_ID !== 'cmgcgnbia000011u1aawjavca') {
-  localStorage.setItem('userId', USER_ID)
+let CURRENT_USER_ID = localStorage.getItem('userId') || null
+export function setUserId(id) {
+  CURRENT_USER_ID = id
+  localStorage.setItem('userId', id)
 }
 
-// simple error element so router shows errors instead of blank page
 function RouteError() {
   return (
     <div className="p-4 text-red-600">
@@ -20,15 +19,17 @@ function RouteError() {
   )
 }
 
-export const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <App />,
-    errorElement: <RouteError />,
-    children: [
-      { index: true, element: <Dashboard userId={USER_ID} /> },
-      { path: 'rewards', element: <Rewards userId={USER_ID} /> },
-      { path: 'analytics', element: <Analytics userId={USER_ID} /> }
-    ]
-  }
-])
+export function makeRouter(USER_ID) {
+  return createBrowserRouter([
+    {
+      path: '/',
+      element: <App />,
+      errorElement: <RouteError />,
+      children: [
+        { index: true, element: <Dashboard userId={USER_ID} /> },
+        { path: 'rewards', element: <Rewards userId={USER_ID} /> },
+        { path: 'analytics', element: <Analytics userId={USER_ID} /> }
+      ]
+    }
+  ])
+}

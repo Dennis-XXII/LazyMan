@@ -12,7 +12,7 @@ export default function BottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-20 font-sans">
       <div className="mx-auto max-w-md">
-        <div className="m-3 rounded-4xl bg-gray-50 shadow-lg shadow-gray-500/30">
+        <div className="m-3 rounded-4xl bg-gray-50 shadow-lg/30 shadow-gray">
           <ul className="grid grid-cols-3 text-sm">
             {tabs.map(t => (
               <li key={t.to}>

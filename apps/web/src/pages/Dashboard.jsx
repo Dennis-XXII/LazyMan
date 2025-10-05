@@ -43,7 +43,7 @@ export default function Dashboard({ userId }) {
               </div>
               <div className="flex items-center gap-1">
                 <button
-                  className={`rounded-xl px-2 py-2 text-xs border ${t.completed ? 'bg-green-600 text-white' : 'border-[#00ADB5] text-[#00ADB5] shadow-md shadow-white-500/30' } active:scale-[.99] flex items-center`}
+                  className={`rounded-xl px-2 py-2 text-xs border ${t.completed ? 'bg-white border-green-600 text-green-600 shadow-md shadow-green-600/30' : 'border-[#00ADB5] text-[#00ADB5] shadow-md shadow-white-500/30' } active:scale-[.99] flex items-center`}
                   onClick={() => toggle.mutate(t.templateId)}
                 >
                   {t.completed ? "Completed" : "Mark Done"}
