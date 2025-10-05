@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String           @id @default(cuid())
+  email       String           @unique
+  name        String?
+  templates   TaskTemplate[]
+  completions TaskCompletion[]
+  redemptions Redemption[]
+  rewards     Reward[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+// A user-defined template that repeats daily (e.g., "Brush Teeth", 10 pts)
+model TaskTemplate {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  points    Int
+  active    Boolean  @default(true)
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  completions TaskCompletion[]
+}
+
+// Completion record for (user, template, date "YYYY-MM-DD")
+model TaskCompletion {
+  id          String       @id @default(cuid())
+  userId      String
+  templateId  String
+  date        String
+  completedAt DateTime     @default(now())
+
+  user     User         @relation(fields: [userId], references: [id])
+  template TaskTemplate @relation(fields: [templateId], references: [id])
+
+  @@unique([userId, templateId, date])
+  @@index([userId, date])
+}
+
+// User-owned reward; cost is taken from today's earned points
+model Reward {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  cost      Int
+  active    Boolean   @default(true)
+  position  Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  redemptions Redemption[]
+}
+
+// A redemption is for a specific user and date ("YYYY-MM-DD")
+model Redemption {
+  id        String   @id @default(cuid())
+  userId    String
+  rewardId  String
+  date      String
+  user      User     @relation(fields: [userId], references: [id])
+  reward    Reward   @relation(fields: [rewardId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([userId, date])
+}
